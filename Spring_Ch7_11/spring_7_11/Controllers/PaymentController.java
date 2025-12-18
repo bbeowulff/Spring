@@ -1,0 +1,81 @@
+package com.example.spring_7_11.Controllers;
+
+import com.example.spring_7_11.Exception.NotEnoughMoneyException;
+import com.example.spring_7_11.Model.ErrorDetails;
+import com.example.spring_7_11.Model.Payment;
+import com.example.spring_7_11.Model.PaymentDetails;
+import com.example.spring_7_11.Service.PaymentService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
+import java.util.logging.Logger;
+
+@RestController
+public class PaymentController {
+
+    private final PaymentService paymentService;
+
+    private static Logger logger =
+            Logger.getLogger(PaymentController.class.getName());
+
+    public PaymentController(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
+
+//    @PostMapping("/payment")
+//    public ResponseEntity<?> makePayment() {
+//        try {
+//            PaymentDetails paymentDetails =
+//            paymentService.processPayment();
+//            return ResponseEntity
+//              .status(HttpStatus.ACCEPTED)
+//                    .body(paymentDetails);
+//        } catch (NotEnoughMoneyException e) {
+//            ErrorDetails errorDetails = new ErrorDetails();
+//            errorDetails.setMessage("Not enough money to make the payment.");
+//            return ResponseEntity
+//              .badRequest()
+//                    .body(errorDetails);
+//        }
+//    }
+
+//    @PostMapping("/payment")
+//    public ResponseEntity<PaymentDetails> makePayment() {
+//        PaymentDetails paymentDetails = paymentService.processPayment();
+//        return ResponseEntity
+//                .status(HttpStatus.ACCEPTED)
+//                .body(paymentDetails);
+//    }
+
+//    @PostMapping("/payment")
+//    public ResponseEntity<PaymentDetails> makePayment(
+//            @RequestBody PaymentDetails paymentDetails) {
+//
+//        logger.info("Received payment " +
+//                paymentDetails.getAmount());
+//
+//        return ResponseEntity
+//              .status(HttpStatus.ACCEPTED)
+//                .body(paymentDetails);
+//    }
+@PostMapping("/payment")
+public ResponseEntity<Payment> createPayment(
+        @RequestHeader String requestId,
+        @RequestBody Payment payment
+) {
+    logger.info("Received request with ID " + requestId +
+            " ;Payment Amount: " + payment.getAmount());
+
+    payment.setId(UUID.randomUUID().toString());
+
+    return ResponseEntity
+            .status(HttpStatus.OK)
+            .header("requestId", requestId)
+            .body(payment);
+}
+}
